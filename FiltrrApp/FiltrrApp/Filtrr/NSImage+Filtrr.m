@@ -1,5 +1,5 @@
 //
-//  UIImage+Filtrr.m
+//  NSImage+Filtrr.m
 //  FilterTest
 //
 //  Created by Omid Hashemi & Stefan Klefisch on 2/6/12.
@@ -11,27 +11,28 @@
 //  https://github.com/alexmic/filtrr
 
 
-#import "UIImage+Filtrr.h"
+#import "NSImage+Filtrr.h"
+#import "NSImage+CGImageRef.h"
 
-@interface UIImage ()
+@interface NSImage ()
 - (CGContextRef) createARGBBitmapContextFromImage:(CGImageRef) imageRef;
-- (UIImage *) createImageFromContext:(CGContextRef) cgctx WithSize:(CGSize) size;
-- (UIImage *) createImageFromPixels:(unsigned char*)outData Length:(NSUInteger)length;
+- (NSImage *) createImageFromContext:(CGContextRef) cgctx WithSize:(CGSize) size;
+- (NSImage *) createImageFromPixels:(unsigned char*)outData Length:(NSUInteger)length;
 
 -(unsigned char*) convolveRaw:(NSArray *) kernel InData:(unsigned char *)inData OuData:(unsigned char*)outData Height:(uint)_height Width:(uint)_width;
 
 @end
 
-@implementation UIImage (Filtrr) 
+@implementation NSImage (Filtrr) 
 
 #pragma mark - Helper
 
--(UIImage *) duplicate {
+-(NSImage *) duplicate {
     // Get the Core Graphics Reference to the Image
     CGImageRef cgImage = [self CGImage];
     
     // Make a new image from the CG Reference
-    return [[UIImage alloc] initWithCGImage:cgImage];
+    return [[NSImage alloc] initWithCGImage:cgImage size:NSZeroSize];
 }
 
 - (CGContextRef) createARGBBitmapContextFromImage:(CGImageRef) imageRef {
@@ -99,7 +100,7 @@
 	return context;
 }
 
-- (UIImage *) createImageFromContext:(CGContextRef) cgctx WithSize:(CGSize) size {
+- (NSImage *) createImageFromContext:(CGContextRef) cgctx WithSize:(CGSize) size {
     
     if (cgctx == NULL)
         // error creating context
@@ -109,7 +110,7 @@
     CGContextTranslateCTM(cgctx, 0, -size.height);
     
     CGImageRef   img = CGBitmapContextCreateImage(cgctx);
-    UIImage*     ui_img = [UIImage imageWithCGImage: img];
+    NSImage*     ui_img = [NSImage imageWithCGImage: img size:NSZeroSize];
     
     CGImageRelease(img);
     CGContextRelease(cgctx);
@@ -117,7 +118,7 @@
     return ui_img;
 }
 
-- (UIImage *) createImageFromPixels:(unsigned char*)outData Length:(NSUInteger)length {
+- (NSImage *) createImageFromPixels:(unsigned char*)outData Length:(NSUInteger)length {
     // create a new image from the modified pixel data
     size_t width                    = CGImageGetWidth(self.CGImage);
     size_t height                   = CGImageGetHeight(self.CGImage);
@@ -143,7 +144,7 @@
                                             kCGRenderingIntentDefault
                                             );
     // the modified image
-    UIImage *newImage   = [UIImage imageWithCGImage:newImageRef];
+    NSImage *newImage   = [NSImage imageWithCGImage:newImageRef size:NSZeroSize];
     
     // cleanup
     CGColorSpaceRelease(colorspace);
@@ -191,7 +192,7 @@
 //        }
 //    }
 //    
-//    UIImage *img = [self createImageFromContext:cgctx WithSize:CGSizeMake(_width, _height)];
+//    NSImage *img = [self createImageFromContext:cgctx WithSize:CGSizeMake(_width, _height)];
 //    // Free image data memory for the context
 //    if (data) { free(data); }
 //    
@@ -232,7 +233,7 @@
         }
     }
     
-    UIImage *img = [self createImageFromContext:cgctx WithSize:CGSizeMake(_width, _height)];
+    NSImage *img = [self createImageFromContext:cgctx WithSize:CGSizeMake(_width, _height)];
 
     if (data) { free(data); }
     
@@ -289,7 +290,7 @@
     
     outData = [self convolveRaw:kernel InData:inData OuData:outData Height:_height Width:_width];
     
-    UIImage *newImage = [self createImageFromPixels:outData Length:pixelData.length];
+    NSImage *newImage = [self createImageFromPixels:outData Length:pixelData.length];
     
 //    if(outData) free(outData);
     if(inData) free(inData);
@@ -362,7 +363,7 @@
             break;
     }
     
-    UIImage *newImage = [self createImageFromPixels:outData Length:pixelData.length];
+    NSImage *newImage = [self createImageFromPixels:outData Length:pixelData.length];
     
     if(outData) free(outData);
     if(inData) free(inData);
@@ -696,7 +697,7 @@
 
 #pragma mark - Blend
 
--(id) applyBlend:(UIImage *)topImage CallBack: (RGBA (^)(RGBA top, RGBA bottom))fn {
+-(id) applyBlend:(NSImage *)topImage CallBack: (RGBA (^)(RGBA top, RGBA bottom))fn {
     CGContextRef topCGctx = [topImage createARGBBitmapContextFromImage:topImage.CGImage];
     unsigned char* blendData = CGBitmapContextGetData (topCGctx);
     
@@ -733,7 +734,7 @@
         }
     }
     
-    UIImage *newImage = [self createImageFromContext:bottomCGctx WithSize:CGSizeMake(_width, _height)];
+    NSImage *newImage = [self createImageFromContext:bottomCGctx WithSize:CGSizeMake(_width, _height)];
 
     if(blendData) free(blendData);
     //if(imageData) free(imageData);
@@ -745,7 +746,7 @@
 /**
  * Multiply blend mode.
  */
--(id) multiply:(UIImage *)topImage {
+-(id) multiply:(NSImage *)topImage {
     return [self applyBlend:topImage CallBack:^RGBA(RGBA top, RGBA bottom) {
         RGBA retVal;
         retVal.red = [self safe:(top.red * bottom.red)/255.0];
@@ -757,7 +758,7 @@
     }];
 }
 
--(id) screen:(UIImage *)topFltr {
+-(id) screen:(NSImage *)topFltr {
     return [self applyBlend:topFltr CallBack:^RGBA(RGBA param1, RGBA param2) {
         RGBA retVal;
         retVal.red = [self safe:255.0 - ((((255.0 - param1.red) * (255.0 - param2.red)) / 255.0))];
@@ -773,7 +774,7 @@
     return (b > 128.0) ? 255.0 - 2.0 * (255.0 - t) * (255.0 - b) / 255.0: (b * t * 2.0) / 255.0;
 }
 
--(id) overlay:(UIImage *)topFltr {
+-(id) overlay:(NSImage *)topFltr {
     return [self applyBlend:topFltr CallBack:^RGBA(RGBA param1, RGBA param2) {
         RGBA retVal;
         retVal.red = [self safe:[self calc_overlay: param2.red other:param1.red]];
@@ -785,7 +786,7 @@
     }];
 }
 
--(id) difference:(UIImage *)topFltr{
+-(id) difference:(NSImage *)topFltr{
     return [self applyBlend:topFltr CallBack:^RGBA(RGBA param1, RGBA param2) {
         RGBA retVal;
         retVal.red = [self safe:abs(param1.red - param2.red)];
@@ -797,7 +798,7 @@
     }];
 }
 
--(id) addition:(UIImage *)topFltr{
+-(id) addition:(NSImage *)topFltr{
     return [self applyBlend:topFltr CallBack:^RGBA(RGBA param1, RGBA param2) {
         RGBA retVal;
         retVal.red = [self safe:abs(param1.red + param2.red)];
@@ -809,7 +810,7 @@
     }];
 }
 
--(id) exclusion:(UIImage *)topFltr{
+-(id) exclusion:(NSImage *)topFltr{
     return [self applyBlend:topFltr CallBack:^RGBA(RGBA param1, RGBA param2) {
         RGBA retVal;
         retVal.red = [self safe:128.0 - 2.0 * (param2.red - 128.0) * (param1.red - 128.0) / 255.0];
@@ -826,7 +827,7 @@
     return (b > 128.0) ? 255.0 - ((255.0 - b) * (255.0 - (t - 128.0))) / 255.0 : (b * (t + 128.0)) / 255.0;
 }
 
--(id) softLight:(UIImage *)topFltr {
+-(id) softLight:(NSImage *)topFltr {
     return [self applyBlend:topFltr CallBack:^RGBA(RGBA param1, RGBA param2) {
         RGBA retVal;
         retVal.red = [self safe:[self calc_softlight: param2.red other:param1.red]];

@@ -1,5 +1,5 @@
 //
-//  UIImage+Filtrr.h
+//  NSImage+Filtrr.h
 //  fltr
 //
 //  Created by Omid Hashemi & Stefan Klefisch on 2/6/12.
@@ -11,7 +11,7 @@
 //  https://github.com/alexmic/filtrr
 
 
-#import <UIKit/UIKit.h>
+#import <Cocoa/Cocoa.h>
 #import <QuartzCore/QuartzCore.h>
 
 struct FieldPosition
@@ -58,10 +58,10 @@ static inline RGBA RGBAMake(int r, int g, int b, int a)
     return field;
 }
 
-@interface UIImage (Filtrr) 
+@interface NSImage (Filtrr) 
 
 - (float) safe:(int) i;
-- (UIImage *) duplicate;
+- (NSImage *) duplicate;
 
 - (id) applyFiltrr:(RGBA (^)(int r, int g, int b, int a))fn;
 - (id) applyFiltrrByStep:(int) step 
@@ -91,14 +91,14 @@ static inline RGBA RGBAMake(int r, int g, int b, int a)
 - (id) sharpen;
 - (id) gaussianBlur;
 
-- (id) applyBlend:(UIImage *)topImage CallBack: (RGBA (^)(RGBA top, RGBA bottom))fn;
-- (id) multiply:(UIImage *)topImage;
-- (id) screen:(UIImage *)topFltr;
-- (id) overlay:(UIImage *)topFltr;
-- (id) difference:(UIImage *)topFltr;
-- (id) addition:(UIImage *)topFltr;
-- (id) exclusion:(UIImage *)topFltr;
-- (id) softLight:(UIImage *)topFltr;
+- (id) applyBlend:(NSImage *)topImage CallBack: (RGBA (^)(RGBA top, RGBA bottom))fn;
+- (id) multiply:(NSImage *)topImage;
+- (id) screen:(NSImage *)topFltr;
+- (id) overlay:(NSImage *)topFltr;
+- (id) difference:(NSImage *)topFltr;
+- (id) addition:(NSImage *)topFltr;
+- (id) exclusion:(NSImage *)topFltr;
+- (id) softLight:(NSImage *)topFltr;
 
 - (float) calc_bias:(float) f Bias:(float) bi;
 - (float) calc_contrast:(float) f contrast:(float) c;

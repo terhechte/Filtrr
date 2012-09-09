@@ -11,9 +11,9 @@
 //  https://github.com/alexmic/filtrr
 
 
-#import <UIKit/UIKit.h>
+#import <Cocoa/Cocoa.h>
 
-@interface UIImage (FiltrrCompositions)
+@interface NSImage (FiltrrCompositions)
 
 -(id) trackTime:(NSString *)method;
 

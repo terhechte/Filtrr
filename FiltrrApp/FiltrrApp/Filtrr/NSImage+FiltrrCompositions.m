@@ -1,5 +1,5 @@
 //
-//  UIImage+FiltrrCompositions.m
+//  NSImage+FiltrrCompositions.m
 //  FilterTest
 //
 //  Created by Omid Hashemi & Stefan Klefisch on 2/6/12.
@@ -10,10 +10,10 @@
 //  Based on Alex Michael's filtrr for Javascript (thanks for sharing Alex)
 //  https://github.com/alexmic/filtrr
 
-#import "UIImage+FiltrrCompositions.h"
-#import "UIImage+Filtrr.h"
+#import "NSImage+FiltrrCompositions.h"
+#import "NSImage+Filtrr.h"
 
-@implementation UIImage (FiltrrCompositions)
+@implementation NSImage (FiltrrCompositions)
 
 #pragma mark - DebugHelper
 
@@ -35,10 +35,10 @@
 
 -(id) e1 {
     
-    UIImage *topImage = [self duplicate];
-    topImage = [[topImage saturationByFactor:0] blur];
+    NSImage *topImage = [self duplicate];
+    topImage = [(NSImage*)[topImage saturationByFactor:0] blur];
     
-    UIImage * newImage = [self multiply:topImage];
+    NSImage * newImage = [self multiply:topImage];
     
     RGBA minrgb, maxrgb;
     
@@ -128,7 +128,7 @@
 }
 
 - (id) e7 { 
-    UIImage *topImage = [self duplicate];
+    NSImage *topImage = [self duplicate];
     
     RGBA minrgb, maxrgb;
     
@@ -142,16 +142,16 @@
     
     topImage = [[topImage tintWithMinRGB:minrgb MaxRGB:maxrgb] saturationByFactor:0.6];
     
-    UIImage *newImage = [[[self adjustRedChannel:0.1 GreenChannel:0.7 BlueChannel:0.4] saturationByFactor:0.6] contrastByFactor:0.8];
+    NSImage *newImage = [[[self adjustRedChannel:0.1 GreenChannel:0.7 BlueChannel:0.4] saturationByFactor:0.6] contrastByFactor:0.8];
     newImage = [newImage multiply:topImage];
     
     return newImage;
 }
 
 - (id) e8 { 
-    UIImage *topImage1 = [self duplicate];
-    UIImage *topImage2 = [self duplicate];
-    UIImage *topImage3 = [self duplicate];
+    NSImage *topImage1 = [self duplicate];
+    NSImage *topImage2 = [self duplicate];
+    NSImage *topImage3 = [self duplicate];
     
     topImage3 = [topImage3 fillRedChannel:167 GreenChannel:118 BlueChannel:12];
     topImage2 = [topImage2 gaussianBlur];
@@ -162,7 +162,7 @@
 
 - (id) e9 { 
     
-    UIImage *topImage = [self duplicate];
+    NSImage *topImage = [self duplicate];
     
     DataField shiftIn = DataFieldMake(2, 3, 0, 1);
     DataField shiftOut = DataFieldMake(3, 0, 1, 2);
@@ -185,7 +185,7 @@
     
     topImage = [topImage blur];
     
-    UIImage * newImage = [self multiply:topImage];
+    NSImage * newImage = [self multiply:topImage];
     
     RGBA minrgb, maxrgb;
     
@@ -251,7 +251,7 @@
 
 - (id) e11 { 
     
-    UIImage *topImage = [self duplicate];
+    NSImage *topImage = [self duplicate];
     
     DataField shiftIn = DataFieldMake(1, 2, 3, 0);
     DataField shiftOut = DataFieldMake(1, 1, 1, 2);
@@ -274,7 +274,7 @@
     
     topImage = [topImage blur];
     
-    UIImage * newImage = [self multiply:topImage];
+    NSImage * newImage = [self multiply:topImage];
     
     RGBA minrgb, maxrgb;
     
